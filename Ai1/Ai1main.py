@@ -22,6 +22,7 @@ bias_hidden_to_output = np.zeros((10,1))
 epochs = 3 # learning iterations
 e_loss = 0
 e_correct = 0
+learning_rate = 0.01
 
 for epoch in range(epochs):
     print(f'Epoch No: {epoch}')
@@ -55,7 +56,7 @@ for epoch in range(epochs):
         hidden = 1/(1 + np.exp(-hidden_raw)) #sigmoid
 
         # 1.3. forward propagation to outpot
-        # 10x20 @ 20x1    = 10x1     + 10x1
+        # = 10x20 @ 20x1    = 10x1     + 10x1
         # print(f'weights_hidden_to_output.shape {weights_hidden_to_output.shape}')
         # print(f'hidden.shape {hidden.shape}')
         # print(f'bias_hidden_to_output.shape {bias_hidden_to_output.shape}')
@@ -80,6 +81,20 @@ for epoch in range(epochs):
         # print(f'np.argmax(output) {np.argmax(output)}')
         # print(f'np.argmax(label) {np.argmax(label)}')
         # print(f'e_correct {e_correct}')
+
+        # 2.BackPropagation
+        # 2.1. output layer
+        # разница двух массвов размером 10х1 = 10х1
+        delta_output = output-label
+        # 10х20 += -число * 10х1 @ 1*20
+        weights_hidden_to_output += -learning_rate * delta_output @ np.transpose(hidden)
+        # 10x1 += -число * 10х1
+        bias_hidden_to_output += -learning_rate * delta_output
+
+        # 2.2. hidden layer
+        delta_hidden = np.transpose(weights_hidden_to_output) @ delta_output * (hidden * (1 - hidden))
+        weights_input_to_hidden += -learning_rate * delta_hidden @ np.transpose(image)
+        bias_input_to_hidden += -learning_rate * delta_hidden
 
         # break
 
